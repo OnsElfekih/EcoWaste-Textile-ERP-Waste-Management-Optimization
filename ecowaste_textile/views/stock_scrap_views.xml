@@ -1,0 +1,40 @@
+
+<odoo>
+    <record id="view_stock_scrap_form_ecowaste" model="ir.ui.view">
+        <field name="name">stock.scrap.form.ecowaste</field>
+        <field name="model">stock.scrap</field>
+        <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group" position="after">
+
+                <group string="EcoWaste Textile">
+
+                    <group string="Caractéristiques du déchet">
+                        <field name="textile_material"/>
+                        <field name="waste_origin"/>
+                        <field name="waste_cause"/>
+                        <field name="textile_quality"/>
+                        <field name="scrap_size"/>
+                    </group>
+
+                    <group string="État et valorisation">
+                        <field name="textile_condition"/>
+                        <field name="hazard_level"/>
+
+                        <field name="recovery_recommendation"
+                               readonly="1"/>
+
+                        <button name="action_recommend_recovery"
+                                string="Recommend Recovery"
+                                type="object"
+                                class="btn-primary"
+                                invisible="state != 'draft'"/>
+                    </group>
+
+                </group>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>
