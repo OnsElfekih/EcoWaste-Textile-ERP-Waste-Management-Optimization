@@ -1,24 +1,31 @@
 
 <odoo>
     <record id="view_stock_scrap_form_ecowaste" model="ir.ui.view">
+
         <field name="name">stock.scrap.form.ecowaste</field>
         <field name="model">stock.scrap</field>
         <field name="inherit_id" ref="stock.stock_scrap_form_view"/>
 
         <field name="arch" type="xml">
+
             <xpath expr="//sheet/group" position="after">
+
+                <!-- SEMAINE 3 : Caractérisation -->
 
                 <group string="EcoWaste Textile">
 
                     <group string="Caractéristiques du déchet">
+
                         <field name="textile_material"/>
                         <field name="waste_origin"/>
                         <field name="waste_cause"/>
                         <field name="textile_quality"/>
                         <field name="scrap_size"/>
+
                     </group>
 
                     <group string="État et valorisation">
+
                         <field name="textile_condition"/>
                         <field name="hazard_level"/>
 
@@ -30,11 +37,58 @@
                                 type="object"
                                 class="btn-primary"
                                 invisible="state != 'draft'"/>
+
+                    </group>
+
+                </group>
+
+                <!-- SEMAINE 4 : Suivi du traitement -->
+
+                <group string="Suivi du traitement">
+
+                    <group string="Décision de traitement">
+
+                        <field name="final_treatment"
+                               readonly="treatment_status != 'pending'"/>
+
+                        <field name="treatment_status"
+                               readonly="1"/>
+
+                        <field name="treatment_responsible_id"
+                               readonly="1"/>
+
+                    </group>
+
+                    <group string="Traçabilité">
+
+                        <field name="treatment_date"
+                               readonly="1"/>
+
+                        <field name="treatment_justification"
+                               readonly="treatment_status != 'pending'"/>
+
+                    </group>
+
+                    <group string="Actions de traitement" colspan="2">
+
+                        <button name="action_validate_treatment"
+                                string="Valider le traitement"
+                                type="object"
+                                class="btn-primary"
+                                invisible="treatment_status != 'pending'"/>
+
+                        <button name="action_complete_treatment"
+                                string="Marquer comme réalisé"
+                                type="object"
+                                class="btn-secondary"
+                                invisible="treatment_status != 'validated'"/>
+
                     </group>
 
                 </group>
 
             </xpath>
+
         </field>
     </record>
 </odoo>

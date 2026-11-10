@@ -8,7 +8,9 @@
     'license': 'LGPL-3',
     'depends': ['stock', 'mrp'],
     'data': [
+        'security/ir.model.access.csv',
         'views/stock_scrap_views.xml',
+        'views/recovery_rule_views.xml',
     ],
     'installable': True,
     'application': False,
