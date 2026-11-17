@@ -197,12 +197,31 @@ class StockScrap(models.Model):
             })
         return True
 
-    # SEMAINE 4 : Confirmation de la réalisation
+    # ==========================================
+    # SEMAINE 5 : Sécurisation du workflow
+    # ==========================================
+
     def action_complete_treatment(self):
         for scrap in self:
+
+            # Vérifier la validation humaine
             if scrap.treatment_status != "validated":
                 raise UserError(
-                    "Le traitement doit être validé avant sa réalisation."
+                    "Le traitement doit être validé "
+                    "avant sa réalisation."
                 )
-            scrap.write({"treatment_status": "completed"})
+
+            # Vérifier la sortie du stock
+            if scrap.state != "done":
+                raise UserError(
+                    "Impossible de terminer le traitement. "
+                    "Veuillez d'abord valider le rebut "
+                    "dans Inventaire."
+                )
+
+            # Clôturer le traitement EcoWaste
+            scrap.write({
+                "treatment_status": "completed",
+            })
+
         return True
