@@ -1,5 +1,4 @@
-
-from odoo import models, fields
+from odoo import fields, models
 
 
 class RecoveryRule(models.Model):
@@ -7,20 +6,9 @@ class RecoveryRule(models.Model):
     _description = "Règle de valorisation des déchets textiles"
     _order = "sequence, id"
 
-    name = fields.Char(
-        string="Nom de la règle",
-        required=True
-    )
-
-    active = fields.Boolean(
-        string="Active",
-        default=True
-    )
-
-    sequence = fields.Integer(
-        string="Priorité",
-        default=10
-    )
+    name = fields.Char(string="Nom de la règle", required=True)
+    active = fields.Boolean(string="Active", default=True)
+    sequence = fields.Integer(string="Priorité", default=10)
 
     textile_material = fields.Selection([
         ("cotton", "Coton"),
@@ -68,11 +56,6 @@ class RecoveryRule(models.Model):
         ("recycle", "Recyclage"),
         ("review", "Évaluation nécessaire"),
         ("disposal", "Élimination"),
-    ],
-        string="Recommandation",
-        required=True
-    )
+    ], string="Recommandation", required=True)
 
-    description = fields.Text(
-        string="Description de la règle"
-    )
+    description = fields.Text(string="Description de la règle")
