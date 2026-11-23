@@ -222,3 +222,6 @@ __marimo__/
 .idea/
 /main.py
 /pyproject.toml
+
+# EcoWasteTextile - Machine Learning
+ml/data/
