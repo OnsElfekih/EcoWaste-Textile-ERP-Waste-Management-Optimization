@@ -1,22 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <record id="view_stock_scrap_form_ecowaste_ml" model="ir.ui.view">
-    <field name="name">stock.scrap.form.ecowaste.ml</field>
-    <field name="model">stock.scrap</field>
-    <field name="inherit_id" ref="ecowaste_textile.view_stock_scrap_form_ecowaste"/>
-    <field name="arch" type="xml">
-      <xpath expr="//field[@name='recovery_recommendation']" position="after">
-        <separator string="Machine Learning (prototype synthétique)" colspan="2"/>
-        <field name="ml_recommendation" readonly="1"/>
-        <field name="ml_confidence" readonly="1"/>
-        <field name="ml_model_version" readonly="1"/>
-        <field name="ml_predicted_at" readonly="1"/>
-        <field name="ml_comparison" readonly="1"/>
-        <field name="ml_safety_alert" invisible="not ml_safety_alert" readonly="1"/>
-        <button name="action_predict_ml" type="object"
-                string="Prédire avec ML" class="btn-secondary"
-                invisible="state != 'draft' or treatment_status != 'pending'"/>
-      </xpath>
-    </field>
-  </record>
+    <record id="view_stock_scrap_form_ecowaste_ml" model="ir.ui.view">
+        <field name="name">stock.scrap.form.ecowaste.ml</field>
+        <field name="model">stock.scrap</field>
+        <field name="inherit_id" ref="ecowaste_textile.view_stock_scrap_form_ecowaste"/>
+
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='recovery_recommendation']" position="after">
+
+                <!-- Machine Learning -->
+                <separator string="Machine Learning (prototype synthétique)" colspan="2"/>
+
+                <field name="ml_recommendation" readonly="1"/>
+                <field name="ml_confidence" readonly="1"/>
+                <field name="ml_model_version" readonly="1"/>
+                <field name="ml_predicted_at" readonly="1"/>
+                <field name="ml_comparison" readonly="1"/>
+
+                <field name="ml_safety_alert"
+                       invisible="not ml_safety_alert"
+                       readonly="1"/>
+
+                <!-- Aide au choix du traitement final -->
+                <separator string="Aide au choix du traitement final" colspan="2"/>
+
+                <field name="ml_decision_source" readonly="1"/>
+
+                <field name="ml_suggested_treatment" readonly="1"/>
+
+                <field name="ml_decision_reason"
+                       readonly="1"
+                       widget="text"/>
+
+                <!-- Action de prédiction ML -->
+                <button name="action_predict_ml"
+                        type="object"
+                        string="Prédire avec ML"
+                        class="btn-secondary"
+                        invisible="state != 'draft' or treatment_status != 'pending'"/>
+
+            </xpath>
+        </field>
+    </record>
 </odoo>

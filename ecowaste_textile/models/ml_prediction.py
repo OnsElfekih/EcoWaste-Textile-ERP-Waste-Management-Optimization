@@ -46,6 +46,120 @@ class StockScrapML(models.Model):
             scrap.ml_safety_alert = bool(guarded and scrap.ml_recommendation and
                                          scrap.ml_recommendation != 'disposal')
 
+
+    ml_confidence_threshold = fields.Float(
+        string="Seuil de confiance ML (%)",
+        compute="_compute_ml_confidence_threshold",
+        digits=(5, 1),
+        readonly=True,
+    )
+
+    @api.depends()
+    def _compute_ml_confidence_threshold(self):
+        for scrap in self:
+            scrap.ml_confidence_threshold = 80.0
+
+    ml_decision_source = fields.Selection([
+        ("rules", "Règles métier"),
+        ("ml", "Machine Learning"),
+        ("agreement", "Accord règles / ML"),
+        ("human", "Examen humain"),
+    ], string="Source conseillée",
+       compute="_compute_ml_decision_advice")
+
+    ml_suggested_treatment = fields.Selection([
+        ("reuse", "Réutilisation"),
+        ("recycle", "Recyclage"),
+        ("disposal", "Élimination"),
+    ], string="Traitement conseillé",
+       compute="_compute_ml_decision_advice")
+
+    ml_decision_reason = fields.Text(
+        string="Explication du choix",
+        compute="_compute_ml_decision_advice",
+    )
+
+    @api.depends(
+        "ml_recommendation",
+        "ml_confidence",
+        "ml_confidence_threshold",
+        "recovery_recommendation",
+        "hazard_level",
+        "textile_quality",
+        "textile_condition",
+    )
+    def _compute_ml_decision_advice(self):
+        for scrap in self:
+            rules = scrap.recovery_recommendation
+            ml = scrap.ml_recommendation
+            confidence = scrap.ml_confidence
+            threshold = scrap.ml_confidence_threshold
+
+            source = "human"
+            treatment = False
+            reason = "Examen humain nécessaire."
+
+            guarded = (
+                scrap.hazard_level == "high"
+                or scrap.textile_quality == "poor"
+                or scrap.textile_condition == "dirty"
+            )
+
+            if guarded:
+                source = "rules"
+                treatment = "disposal"
+                reason = (
+                    "Garde-fou de sécurité activé. "
+                    "Élimination obligatoire."
+                )
+
+            elif rules == "review":
+                source = "human"
+                reason = (
+                    "Les règles métier demandent un examen "
+                    "manuel avant toute décision."
+                )
+
+            elif not rules:
+                source = "human"
+                reason = "Aucune recommandation métier disponible."
+
+            elif not ml:
+                source = "rules"
+                treatment = rules
+                reason = "Prédiction ML indisponible."
+
+            elif ml == rules:
+                source = "agreement"
+                treatment = rules
+                reason = (
+                    "Le ML et les règles métier sont en accord."
+                )
+
+            elif confidence >= threshold:
+                source = "ml"
+                treatment = ml
+                reason = (
+                    f"Confiance ML de {confidence:.1f}% "
+                    f"supérieure ou égale au seuil "
+                    f"de {threshold:.1f}%. "
+                    "Validation humaine nécessaire."
+                )
+
+            else:
+                source = "rules"
+                treatment = rules
+                reason = (
+                    f"Confiance ML de {confidence:.1f}% "
+                    f"inférieure au seuil "
+                    f"de {threshold:.1f}%. "
+                    "Recommandation métier privilégiée."
+                )
+
+            scrap.ml_decision_source = source
+            scrap.ml_suggested_treatment = treatment
+            scrap.ml_decision_reason = reason
+
     def action_predict_ml(self):
         """Explicit opt-in prediction. Never changes recommendation or final treatment."""
         try:

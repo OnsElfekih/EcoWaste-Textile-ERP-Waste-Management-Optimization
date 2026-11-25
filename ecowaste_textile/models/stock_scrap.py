@@ -190,6 +190,19 @@ class StockScrap(models.Model):
                     "Veuillez justifier la décision de traitement."
                 )
 
+            guarded = (
+                scrap.hazard_level == "high"
+                or scrap.textile_quality == "poor"
+                or scrap.textile_condition == "dirty"
+            )
+
+            if guarded and scrap.final_treatment != "disposal":
+                raise UserError(
+                    "Le garde-fou métier impose l'élimination "
+                    "pour ce déchet textile. "
+                    "Le traitement final doit être Élimination."
+                )
+
             scrap.write({
                 "treatment_status": "validated",
                 "treatment_responsible_id": self.env.user.id,
